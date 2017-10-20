@@ -78,4 +78,5 @@ func main() {
 -   ✘ more actions
 -   ✘ tests and benchmarks
 
-#### LICENCE
+#### LICENSE
+Under [MIT License](https://github.com/dtynn/chromy/blob/master/LICENSE)

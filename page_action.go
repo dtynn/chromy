@@ -1,7 +1,9 @@
 package chromy
 
 import (
+	"bytes"
 	"context"
+	"io"
 
 	"github.com/mafredri/cdp/protocol/page"
 )
@@ -38,5 +40,18 @@ func PageLoaded() Action {
 		case <-ctx.Done():
 			return ctx.Err()
 		}
+	})
+}
+
+func CaptureScreenshot(w io.Writer) Action {
+	return ActionFunc(func(ctx context.Context, t *Target) error {
+		reply, err := t.Client().Page.CaptureScreenshot(ctx, page.NewCaptureScreenshotArgs())
+		if err != nil {
+			return err
+		}
+
+		buf := bytes.NewBuffer(reply.Data)
+		_, err = io.Copy(w, buf)
+		return err
 	})
 }
