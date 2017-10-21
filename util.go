@@ -24,7 +24,7 @@ func nodeIDToRemoteObjectID(ctx context.Context, cli *cdp.Client, nodeID dom.Nod
 	return *reply.Object.ObjectID, nil
 }
 
-func callFuncOnRemoteObject(ctx context.Context, cli *cdp.Client, objectID runtime.RemoteObjectID, declaration string, arguments []interface{}, res interface{}, opt ...CallOption) (*runtime.ExceptionDetails, error) {
+func callFuncOnRemoteObject(ctx context.Context, cli *cdp.Client, objectID runtime.RemoteObjectID, declaration string, arguments []interface{}, res interface{}, opt ...CallOption) error {
 	callArgs := make([]runtime.CallArgument, 0, len(arguments))
 	for _, one := range arguments {
 		callArg := runtime.CallArgument{}
@@ -45,7 +45,7 @@ func callFuncOnRemoteObject(ctx context.Context, cli *cdp.Client, objectID runti
 		default:
 			b, err := json.Marshal(v)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			callArg.Value = json.RawMessage(b)
@@ -64,15 +64,19 @@ func callFuncOnRemoteObject(ctx context.Context, cli *cdp.Client, objectID runti
 
 	reply, err := cli.Runtime.CallFunctionOn(ctx, arg)
 	if err != nil {
-		return nil, err
+		return err
+	}
+
+	if reply.ExceptionDetails != nil {
+		return reply.ExceptionDetails
 	}
 
 	if res != nil {
 		err = json.Unmarshal(reply.Result.Value, res)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	return reply.ExceptionDetails, nil
+	return nil
 }

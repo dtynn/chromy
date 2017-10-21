@@ -49,8 +49,18 @@ func Blur(selector string) Action {
 			return err
 		}
 
-		_, err = callFuncOnRemoteObject(ctx, cli, objectID, "blur", nil, nil)
+		return callFuncOnRemoteObject(ctx, cli, objectID, "function() { this.click() }", nil, nil)
+	})
+}
 
-		return err
+func Click(selector string) Action {
+	return OnNode(selector, func(ctx context.Context, t *Target, node *Node) error {
+		cli := t.Client()
+		objectID, err := nodeIDToRemoteObjectID(ctx, cli, node.NodeID)
+		if err != nil {
+			return err
+		}
+
+		return callFuncOnRemoteObject(ctx, cli, objectID, "function() { this.click() }", nil, nil)
 	})
 }
