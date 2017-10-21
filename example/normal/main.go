@@ -27,7 +27,7 @@ func main() {
 
 	defer t.Close()
 
-	onCategoryNodes := func(nodes ...*chromy.Node) error {
+	onCategoryNodes := func(ctx context.Context, t *chromy.Target, nodes ...*chromy.Node) error {
 		for i, node := range nodes {
 			var category, href string
 

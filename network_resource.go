@@ -23,7 +23,7 @@ type Resource struct {
 
 func (r *Resource) Do(ctx context.Context, t *Target) error {
 	if r.matchFn == nil {
-		return errNoMatchFunc
+		return ErrNoMatchFunc
 	}
 
 	errCh := make(chan error, 1)

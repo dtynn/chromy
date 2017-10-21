@@ -80,7 +80,7 @@ func QueryNode(ptr *Node) QueryOption {
 	return func(q *Query) {
 		q.afterFn = func(ctx context.Context, t *Target, nodes ...*Node) error {
 			if len(nodes) == 0 {
-				return errNodeNotFound
+				return ErrNodeNotFound
 			}
 
 			*ptr = *(nodes[0])
@@ -89,27 +89,19 @@ func QueryNode(ptr *Node) QueryOption {
 	}
 }
 
-func QueryAfter(fn func(node *Node) error) QueryOption {
+func QueryAfter(fn func(ctx context.Context, t *Target, node *Node) error) QueryOption {
 	return func(q *Query) {
 		q.afterFn = func(ctx context.Context, t *Target, nodes ...*Node) error {
 			if len(nodes) == 0 {
-				return errNodeNotFound
+				return ErrNodeNotFound
 			}
 
-			return fn(nodes[0])
+			return fn(ctx, t, nodes[0])
 		}
 	}
 }
 
-func QueryAfterAll(fn func(nodes ...*Node) error) QueryOption {
-	return func(q *Query) {
-		q.afterFn = func(ctx context.Context, t *Target, nodes ...*Node) error {
-			return fn(nodes...)
-		}
-	}
-}
-
-func QueryAfterFunc(fn func(ctx context.Context, t *Target, nodes ...*Node) error) QueryOption {
+func QueryAfterAll(fn func(ctx context.Context, t *Target, nodes ...*Node) error) QueryOption {
 	return func(q *Query) {
 		q.afterFn = fn
 	}
@@ -131,7 +123,7 @@ type Query struct {
 
 func (q *Query) Do(ctx context.Context, t *Target) error {
 	if q.queryFn == nil {
-		return errNoQueryFunc
+		return ErrNoQueryFunc
 	}
 
 	found := make([]*Node, 0, 20)

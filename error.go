@@ -7,14 +7,11 @@ import (
 )
 
 var (
-	errNodeNotFound = fmt.Errorf("dom node not found")
-	errNoQueryFunc  = fmt.Errorf("no query function")
-	errNoMatchFunc  = fmt.Errorf("no match function")
+	ErrNodeNotFound        = fmt.Errorf("dom node not found")
+	ErrNoQueryFunc         = fmt.Errorf("no query function")
+	ErrNoMatchFunc         = fmt.Errorf("no match function")
+	ErrUnableToResolveNode = fmt.Errorf("unable to resolve node")
 )
-
-func IsErrNodeNotFound(err error) bool {
-	return err == errNodeNotFound
-}
 
 type causer interface {
 	Cause() error
