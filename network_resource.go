@@ -22,6 +22,10 @@ type Resource struct {
 }
 
 func (r *Resource) Do(ctx context.Context, t *Target) error {
+	return actionErr("resource", r.do(ctx, t))
+}
+
+func (r *Resource) do(ctx context.Context, t *Target) error {
 	if r.matchFn == nil {
 		return ErrNoMatchFunc
 	}

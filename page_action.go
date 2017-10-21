@@ -9,14 +9,14 @@ import (
 )
 
 func Navigate(URL string) Action {
-	return ActionFunc(func(ctx context.Context, t *Target) error {
+	return actionWrapper("navigate", ActionFunc(func(ctx context.Context, t *Target) error {
 		_, err := t.Client().Page.Navigate(ctx, page.NewNavigateArgs(URL))
 		return err
-	})
+	}))
 }
 
 func DocumentReady() Action {
-	return ActionFunc(func(ctx context.Context, t *Target) error {
+	return actionWrapper("documentReady", ActionFunc(func(ctx context.Context, t *Target) error {
 		c := t.domain.Page.events.DOMContentEventFiredClient
 		select {
 		case <-c.Ready():
@@ -26,11 +26,11 @@ func DocumentReady() Action {
 		case <-ctx.Done():
 			return ctx.Err()
 		}
-	})
+	}))
 }
 
 func PageLoaded() Action {
-	return ActionFunc(func(ctx context.Context, t *Target) error {
+	return actionWrapper("pageLoaded", ActionFunc(func(ctx context.Context, t *Target) error {
 		c := t.domain.Page.events.LoadEventFiredClient
 		select {
 		case <-c.Ready():
@@ -40,11 +40,11 @@ func PageLoaded() Action {
 		case <-ctx.Done():
 			return ctx.Err()
 		}
-	})
+	}))
 }
 
 func CaptureScreenshot(w io.Writer) Action {
-	return ActionFunc(func(ctx context.Context, t *Target) error {
+	return actionWrapper("captureScreenshot", ActionFunc(func(ctx context.Context, t *Target) error {
 		reply, err := t.Client().Page.CaptureScreenshot(ctx, page.NewCaptureScreenshotArgs())
 		if err != nil {
 			return err
@@ -53,5 +53,5 @@ func CaptureScreenshot(w io.Writer) Action {
 		buf := bytes.NewBuffer(reply.Data)
 		_, err = io.Copy(w, buf)
 		return err
-	})
+	}))
 }

@@ -12,15 +12,15 @@ type URLPattern interface {
 }
 
 func WaitResource(method string, urlpattern URLPattern) Action {
-	return NewResource(ResourcePattern(method, urlpattern), ResourceDone())
+	return actionWrapper("waitResource", NewResource(ResourcePattern(method, urlpattern), ResourceDone()))
 }
 
 func WaitResourceWithMatcher(matcher func(*Request) bool) Action {
-	return NewResource(ResourceMatch(matcher), ResourceDone())
+	return actionWrapper("waitResourceWithMatcher", NewResource(ResourceMatch(matcher), ResourceDone()))
 }
 
 func CaptureRequests(macher func(*Request) bool, onRequest func(*Request)) Action {
-	return ActionFunc(func(ctx context.Context, t *Target) error {
+	return actionWrapper("captureRequest", ActionFunc(func(ctx context.Context, t *Target) error {
 		stopper := func(r *Request) bool {
 			if macher(r) {
 				onRequest(r)
@@ -33,5 +33,5 @@ func CaptureRequests(macher func(*Request) bool, onRequest func(*Request)) Actio
 		t.domain.Network.watch(stopper)
 
 		return nil
-	})
+	}))
 }

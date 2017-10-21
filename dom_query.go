@@ -122,6 +122,10 @@ type Query struct {
 }
 
 func (q *Query) Do(ctx context.Context, t *Target) error {
+	return actionErr("query", q.do(ctx, t))
+}
+
+func (q *Query) do(ctx context.Context, t *Target) error {
 	if q.queryFn == nil {
 		return ErrNoQueryFunc
 	}

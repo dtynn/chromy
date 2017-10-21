@@ -2,7 +2,14 @@ package chromy
 
 import (
 	"context"
+	"fmt"
 )
+
+func actionWrapper(name string, action Action) Action {
+	return ActionFunc(func(ctx context.Context, t *Target) error {
+		return actionErr(name, action.Do(ctx, t))
+	})
+}
 
 // Action
 type Action interface {
@@ -19,9 +26,9 @@ func (a ActionFunc) Do(ctx context.Context, t *Target) error {
 type Task []Action
 
 func (t Task) Do(ctx context.Context, tar *Target) error {
-	for _, a := range t {
+	for i, a := range t {
 		if err := step(ctx, tar, a); err != nil {
-			return err
+			return actionErr(fmt.Sprintf("task-%d", i), err)
 		}
 	}
 

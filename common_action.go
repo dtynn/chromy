@@ -6,7 +6,7 @@ import (
 )
 
 func Sleep(d time.Duration) Action {
-	return ActionFunc(func(ctx context.Context, t *Target) error {
+	return actionWrapper("sleep", ActionFunc(func(ctx context.Context, t *Target) error {
 		select {
 		case <-time.After(d):
 			return nil
@@ -14,5 +14,5 @@ func Sleep(d time.Duration) Action {
 		case <-ctx.Done():
 			return ctx.Err()
 		}
-	})
+	}))
 }
